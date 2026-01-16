@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from "../api";
 import { useNavigate } from 'react-router-dom';
 import '../styles/Auth.css';
 
@@ -40,7 +40,7 @@ const Signup = ({ onLoginSuccess }) => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/signup', {
+      const response = await api.post("/api/auth/signup", {
         username: formData.username,
         email: formData.email,
         password: formData.password
