@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from "../api";
 import '../styles/EditPost.css';
 
 const EditPost = ({ isLoggedIn }) => {
@@ -25,10 +25,11 @@ const EditPost = ({ isLoggedIn }) => {
 
   const fetchPost = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/posts/${id}`);
+      const response = await api.get(`/api/posts/${id}`);
       const currentUser = JSON.parse(localStorage.getItem('user'));
       
-      if (response.data.author._id !== currentUser.id) {
+      if ( response.data.author._id !== currentUser?.id &&
+           response.data.author._id !== currentUser?._id) {
         setError('You are not authorized to edit this post');
         setLoading(false);
         return;
@@ -57,21 +58,22 @@ const EditPost = ({ isLoggedIn }) => {
       return;
     }
 
-    try {
-      const token = localStorage.getItem('token');
-      await axios.put(
-        `http://localhost:5000/api/posts/${id}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+  try {
+  const token = localStorage.getItem('token');
 
-      setSuccess('Post updated successfully!');
-      setTimeout(() => navigate(`/post/${id}`), 2000);
-    } catch (err) {
+  await api.put(
+    `/api/posts/${id}`,
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+
+  setSuccess('Post updated successfully!');
+  setTimeout(() => navigate(`/post/${id}`), 2000);
+} catch (err) {
       setError(err.response?.data?.error || 'Failed to update post');
     } finally {
       setSaving(false);
